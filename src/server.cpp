@@ -1,11 +1,11 @@
-#include "database.hpp"
+#include "backend.hpp"
 
 #include <boost/algorithm/string.hpp>
 #include <drogon/drogon.h>
 using namespace drogon;
 
 namespace {
-Database database{"."};
+Backend backend{"."};
 }
 
 int main() {
@@ -14,7 +14,7 @@ int main() {
       [](const HttpRequestPtr &req,
          std::function<void(const HttpResponsePtr &)> &&callback) {
         Json::Value json;
-        auto movies = database.getMovies();
+        auto movies = backend.getMovies();
         for (auto &&movie : movies) {
           Json::Value val;
           val["name"] = movie.name;
@@ -30,7 +30,7 @@ int main() {
          std::function<void(const HttpResponsePtr &)> &&callback,
          const std::string &movie) {
         Json::Value json;
-        auto theaters = database.getTheaters(movie);
+        auto theaters = backend.getTheaters(movie);
         for (auto &&theater : theaters) {
           Json::Value val;
           val["name"] = theater.name;
@@ -46,7 +46,7 @@ int main() {
          std::function<void(const HttpResponsePtr &)> &&callback,
          const std::string &theater, const std::string &movie) {
         Json::Value json;
-        auto seats = database.getAvailableSeats(theater, movie);
+        auto seats = backend.getAvailableSeats(theater, movie);
         for (auto &&seat : seats) {
           Json::Value val;
           val["name"] = seat.name;
@@ -65,7 +65,7 @@ int main() {
         Json::Value json;
         std::vector<std::string> seat_names;
         boost::split(seat_names, seats, boost::is_any_of(","));
-        auto result = database.book(theater, movie, seat_names);
+        auto result = backend.book(theater, movie, seat_names);
         json["success"] = result;
         auto resp = HttpResponse::newHttpJsonResponse(json);
         callback(resp);

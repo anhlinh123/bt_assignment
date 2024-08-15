@@ -1,13 +1,13 @@
-#include "database.hpp"
+#include "backend.hpp"
 
 #include <fstream>
 #include <json/json.h>
 #include <mutex>
 #include <shared_mutex>
 
-class Database::DatabaseImpl {
+class Backend::BackendImpl {
 public:
-  DatabaseImpl(const std::string &root_dir) {
+  BackendImpl(const std::string &root_dir) {
     std::ifstream istrm{root_dir + "/data.json", std::ios::binary};
     if (istrm.is_open()) {
       Json::CharReaderBuilder rbuilder;
@@ -103,26 +103,26 @@ private:
   mutable std::shared_mutex mutex;
 };
 
-Database::Database(const std::string &root_dir)
-    : impl(new DatabaseImpl(root_dir)) {}
-Database::~Database() = default;
-Database::Database(Database &&) noexcept = default;
-Database &Database::operator=(Database &&) noexcept = default;
+Backend::Backend(const std::string &root_dir)
+    : impl(new BackendImpl(root_dir)) {}
+Backend::~Backend() = default;
+Backend::Backend(Backend &&) noexcept = default;
+Backend &Backend::operator=(Backend &&) noexcept = default;
 
-std::vector<Movie> Database::getMovies() const { return impl->getMovies(); }
+std::vector<Movie> Backend::getMovies() const { return impl->getMovies(); }
 
 std::vector<Theater>
-Database::getTheaters(const std::string &movie_name) const {
+Backend::getTheaters(const std::string &movie_name) const {
   return impl->getTheaters(movie_name);
 }
 
 std::vector<Seat>
-Database::getAvailableSeats(const std::string &theater_name,
+Backend::getAvailableSeats(const std::string &theater_name,
                             const std::string &movie_name) const {
   return impl->getAvailableSeats(theater_name, movie_name);
 }
 
-bool Database::book(const std::string &theater_name,
+bool Backend::book(const std::string &theater_name,
                     const std::string &movie_name,
                     const std::vector<std::string> &seat_names) {
   return impl->book(theater_name, movie_name, seat_names);

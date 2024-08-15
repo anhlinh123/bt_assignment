@@ -5,15 +5,15 @@
 #include <string>
 #include <vector>
 
-class Database {
+class Backend {
 public:
-  Database(const std::string &root_dir);
-  ~Database();
+  Backend(const std::string &root_dir);
+  ~Backend();
 
-  Database(const Database &) = delete;
-  Database(Database &&) noexcept;
-  Database &operator=(const Database &) = delete;
-  Database &operator=(Database &&) noexcept;
+  Backend(const Backend &) = delete;
+  Backend(Backend &&) noexcept;
+  Backend &operator=(const Backend &) = delete;
+  Backend &operator=(Backend &&) noexcept;
 
   std::vector<Movie> getMovies() const;
   std::vector<Theater> getTheaters(const std::string &movie_name) const;
@@ -23,6 +23,6 @@ public:
             const std::vector<std::string> &seat_names);
 
 private:
-  class DatabaseImpl;
-  std::unique_ptr<DatabaseImpl> impl;
+  class BackendImpl;
+  std::unique_ptr<BackendImpl> impl;
 };
