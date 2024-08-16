@@ -6,6 +6,11 @@
 #include <memory>
 #include <string>
 
+/**
+ * The controller to handle http requests. This is the glue that connects the
+ * backend with the drogon framework.
+ *
+ */
 class Controller : public drogon::HttpController<Controller, false> {
 public:
   Controller(std::shared_ptr<Backend> ptr);
@@ -13,10 +18,9 @@ public:
   METHOD_LIST_BEGIN
   ADD_METHOD_TO(Controller::getMovies, "/movies", drogon::Get);
   ADD_METHOD_TO(Controller::getTheaters, "/theaters?movie={1}", drogon::Get);
-  ADD_METHOD_TO(Controller::getAvailableSeats,
-                "/seats?theater={theater}&movie={movie}", drogon::Get);
-  ADD_METHOD_TO(Controller::book,
-                "/book?theater={theater}&movie={movie}&seats={seats}",
+  ADD_METHOD_TO(Controller::getAvailableSeats, "/seats?theater={1}&movie={2}",
+                drogon::Get);
+  ADD_METHOD_TO(Controller::book, "/book?theater={1}&movie={2}&seats={3}",
                 drogon::Post);
   METHOD_LIST_END
 

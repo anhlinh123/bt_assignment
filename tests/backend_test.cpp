@@ -79,3 +79,22 @@ TEST_F(BackendTest, bookUnsuccessfully) {
       backend.book("theater_1", "movie_1", std::vector<std::string>{"4", "2"});
   EXPECT_EQ(success, false);
 }
+
+TEST_F(BackendTest, parallelBookingsWorkCorrectly) {
+  Backend backend{root};
+  std::atomic<int> successCount{};
+  auto bookFunc = [&backend, &successCount]() {
+    auto success = backend.book("theater_1", "movie_1",
+                                std::vector<std::string>{"1", "2"});
+    if (success) {
+      successCount++;
+    }
+  };
+
+  std::thread t1{bookFunc}, t2{bookFunc}, t3{bookFunc}, t4{bookFunc};
+  t1.join();
+  t2.join();
+  t3.join();
+  t4.join();
+  EXPECT_EQ(successCount, 1);
+}

@@ -40,6 +40,29 @@ cmake -S <project_dir> -B <build_dir> --preset=conan-release
 cmake --build <build_dir> --preset=conan-release
 ```
 
+### Run
+
+The output binary is `server`, which is an HTTP server. It can be launched by running:
+```
+<path>/server <path to config.json>
+```
+`config.json` is a drogon-specific file to configure the server. More details can be found [here](https://github.com/drogonframework/drogon/blob/master/config.example.json).
+There is a special info that is specific to the backend, which is located under the `custom_config` section.
+It must specify the path to the JSON file containing the database. The path is relative to the directory containing the config.json file.
+```
+"custom_config" : {
+    "data" : <JSON file>
+}
+```
+The default `config.json` in the source root directory sets up a server at `localhost:8080`, and uses the data file at `data/data.json`.
+
+### REST APIs
+
+- Get all movies: `GET /movies`
+- Get all theaters showing a movie: `GET /theaters?movie={}`
+- Get all available seats for a movie in a theater: `GET /seats?theaters={}&movie={}`
+- Book some seats: `POST /book?theater={}&movie={}&seats{colon-separated list}`
+
 ### Test
 
 ```

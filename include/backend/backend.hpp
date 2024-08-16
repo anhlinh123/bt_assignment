@@ -9,8 +9,33 @@
 #include <string>
 #include <vector>
 
+/**
+ * The core logic of the backend.
+ * It stores all data internally and provide APIs to access it.
+ * Using pimpl idiom wasn't a significant design consideration.
+ * I just needed to develop backend without rebuilding other parts, hence the
+ * idiom. Other than that, it makes no difference.
+ *
+ * The backend is thread-safe. All functions are synchronized so concurrent
+ * bookings will be executed one by one.
+ */
 class Backend {
 public:
+  /**
+   * Construct the backend from a json value.
+   * The JSon value must have this format:
+   * [
+   *    {
+   *        "name" : {theater name},
+   *        "movies" : [
+   *            {
+   *                "name" : {movie name},
+   *                "seats" : [ {list of seats} ]
+   *            }
+   *        ]
+   *    }
+   * ]
+   */
   Backend(const Json::Value &root);
   ~Backend();
 
