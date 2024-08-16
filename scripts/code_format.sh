@@ -13,11 +13,11 @@ json_format() {
 
 export -f json_format
 
-find $SCRIPT_DIR \
+find $SCRIPT_DIR/.. \
     -path "*/CMakeFiles" -prune -type f \
     -o \( -name "*.cpp" -o -name "*.hpp" \) \
     -exec clang-format -i {} +
-find $SCRIPT_DIR \
+find $SCRIPT_DIR/.. \
     -path "*/CMakeFiles" -prune -type f \
     -o -path "*/build" -prune -type f \
     -o -name "*.json" \

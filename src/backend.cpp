@@ -1,34 +1,22 @@
-#include "backend.hpp"
-
-#include <fstream>
-#include <json/json.h>
+#include <backend/backend.hpp>
 #include <mutex>
 #include <shared_mutex>
 
 class Backend::BackendImpl {
 public:
-  BackendImpl(const std::string &root_dir) {
-    std::ifstream istrm{root_dir + "/data.json", std::ios::binary};
-    if (istrm.is_open()) {
-      Json::CharReaderBuilder rbuilder;
-      rbuilder["collectComments"] = false;
-      std::string errs;
-      Json::Value root;
-      Json::parseFromStream(rbuilder, istrm, &root, &errs);
-
-      for (auto &&theater_val : root) {
-        auto &theater = theaters[theater_val["name"].asString()];
-        theater.name = theater_val["name"].asString();
-        for (auto &&movie_val : theater_val["movies"]) {
-          auto &&cinema = theater.movies[movie_val["name"].asString()];
-          for (auto &&seat : movie_val["seats"]) {
-            cinema.seats[seat.asString()].name = seat.asString();
-          }
-
-          auto &&movie = movies[movie_val["name"].asString()];
-          movie.name = movie_val["name"].asString();
-          movie.theaters.push_back(theater.name);
+  BackendImpl(const Json::Value &root) {
+    for (auto &&theater_val : root) {
+      auto &theater = theaters[theater_val["name"].asString()];
+      theater.name = theater_val["name"].asString();
+      for (auto &&movie_val : theater_val["movies"]) {
+        auto &&cinema = theater.movies[movie_val["name"].asString()];
+        for (auto &&seat : movie_val["seats"]) {
+          cinema.seats[seat.asString()].name = seat.asString();
         }
+
+        auto &&movie = movies[movie_val["name"].asString()];
+        movie.name = movie_val["name"].asString();
+        movie.theaters.push_back(theater.name);
       }
     }
   }
@@ -103,27 +91,25 @@ private:
   mutable std::shared_mutex mutex;
 };
 
-Backend::Backend(const std::string &root_dir)
-    : impl(new BackendImpl(root_dir)) {}
+Backend::Backend(const Json::Value &root) : impl(new BackendImpl(root)) {}
 Backend::~Backend() = default;
 Backend::Backend(Backend &&) noexcept = default;
 Backend &Backend::operator=(Backend &&) noexcept = default;
 
 std::vector<Movie> Backend::getMovies() const { return impl->getMovies(); }
 
-std::vector<Theater>
-Backend::getTheaters(const std::string &movie_name) const {
+std::vector<Theater> Backend::getTheaters(const std::string &movie_name) const {
   return impl->getTheaters(movie_name);
 }
 
 std::vector<Seat>
 Backend::getAvailableSeats(const std::string &theater_name,
-                            const std::string &movie_name) const {
+                           const std::string &movie_name) const {
   return impl->getAvailableSeats(theater_name, movie_name);
 }
 
 bool Backend::book(const std::string &theater_name,
-                    const std::string &movie_name,
-                    const std::vector<std::string> &seat_names) {
+                   const std::string &movie_name,
+                   const std::vector<std::string> &seat_names) {
   return impl->book(theater_name, movie_name, seat_names);
 }

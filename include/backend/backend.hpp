@@ -1,5 +1,9 @@
+#pragma once
+
 #include "types.hpp"
 
+#include <fstream>
+#include <json/json.h>
 #include <memory>
 #include <span>
 #include <string>
@@ -7,7 +11,7 @@
 
 class Backend {
 public:
-  Backend(const std::string &root_dir);
+  Backend(const Json::Value &root);
   ~Backend();
 
   Backend(const Backend &) = delete;

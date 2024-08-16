@@ -1,18 +1,12 @@
 cmake_minimum_required(VERSION 3.28.3)
 project(server)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_subdirectory(src)
 
-find_package(GTest REQUIRED)
-find_package(Drogon REQUIRED)
+add_executable(server main.cpp)
+target_compile_features(server PRIVATE cxx_std_20)
+target_link_libraries(server PRIVATE backend)
 
 enable_testing()
+add_subdirectory(tests)
 
-add_library(backend STATIC src/backend.cpp)
-target_link_libraries(backend JsonCpp::JsonCpp)
-add_executable(server src/server.cpp)
-target_link_libraries(server backend Drogon::Drogon)
-
-#include(GoogleTest)
-#gtest_discover_tests(backend_test)
